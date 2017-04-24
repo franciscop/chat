@@ -1,6 +1,7 @@
 import React from 'react';
 import { Icon, Collection, CollectionItem } from 'react-materialize';
 import ReactChatView from 'react-chatview';
+import InputForm from './input-form.jsx';
 
 export default class LoginScreen extends React.Component {
   constructor(...props){
@@ -32,37 +33,26 @@ export default class LoginScreen extends React.Component {
   }
   render () {
     // Set the username upstream in the main chat component
-    const onSubmit = e => {
-      e.preventDefault();
-      this.props.socket.emit('message', this.state.message);
-      this.setState({ message: '' });
+    const onSubmit = message => {
+      this.props.socket.emit('message', message);
     }
-    // Set the editing username
-    const onChange = e => {
-      this.setState({ message: e.target.value });
-    }
+
+
     const writeMessage = (msg, i) => {
-      if (msg.type === 'join') {
-        return (
-          <div className='msg meta' key={'msg-' + i}>
-            {msg.user} joined the room #{this.props.room}
-          </div>
-        );
-      }
-      if (msg.type === 'message') {
-        return (
-          <div className='msg' key={'msg-' + i}>
-            {msg.user}: {msg.message}
-          </div>
-        );
-      }
-      if (msg.type === 'leave') {
-        return (
-          <div className='msg meta' key={'msg-' + i}>
-            {msg.user} left the room
-          </div>
-        );
-      }
+
+      // If it's a grayed-out message or not
+      const meta = ['join', 'leave'].includes(msg.type);
+      const types = {
+        join: msg => `${msg.user} joined the room #${this.props.room}`,
+        message: msg => `${msg.user}: ${msg.message}`,
+        leave: msg => `${msg.user} left the room #${this.props.room}`,
+      };
+
+      return (
+        <div className={['msg', meta ? 'meta' : ''].join(' ')} key={'msg-' + i}>
+          {types[msg.type](msg)}
+        </div>
+      );
     };
     return (
       <ReactChatView
@@ -72,15 +62,10 @@ export default class LoginScreen extends React.Component {
         onInfiniteLoad={() => {}}
       >
         {this.state.messages.map(writeMessage)}
-        <form onSubmit={onSubmit}>
-          <div className="input-field">
-            <input onChange={onChange} value={this.state.message} placeholder="message" autoFocus className="validate" id="username" type="text" data-length="20" />
-            <label htmlFor="username">Write a message</label>
-          </div>
-          <button className="btn btn-large btn-floating waves-effect waves-light" type="submit" name="action">
-            <i className="material-icons right">send</i>
-          </button>
-        </form>
+
+        <InputForm send={onSubmit} icon="edit_mode">
+          Write a message
+        </InputForm>
       </ReactChatView>
     );
   }
