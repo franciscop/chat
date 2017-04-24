@@ -65,7 +65,10 @@ export default class Chat extends React.Component {
       <div>
         <nav>
           <div className="nav-wrapper">
-            <a href="/" className="brand-logo">Blackstorm Chat</a>
+            <a href="/" className="brand-logo">
+              <Icon>question_answer</Icon>
+              Blackstorm Chat
+            </a>
             <ul id="nav-mobile" className="right hide-on-med-and-down">
               {this.state.room ? (
                 <li>

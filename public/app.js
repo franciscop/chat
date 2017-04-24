@@ -15015,6 +15015,11 @@ var Chat = function (_React$Component) {
             _react2.default.createElement(
               'a',
               { href: '/', className: 'brand-logo' },
+              _react2.default.createElement(
+                _reactMaterialize.Icon,
+                null,
+                'question_answer'
+              ),
               'Blackstorm Chat'
             ),
             _react2.default.createElement(
