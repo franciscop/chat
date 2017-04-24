@@ -18,6 +18,7 @@
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-materialize": "^0.18.1",
+    "server": "^1.0.0-alpha.36",
     "socket.io-client": "^1.7.3"
   },
   "devDependencies": {
