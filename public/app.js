@@ -14950,6 +14950,7 @@ var Chat = function (_React$Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
+      $(".button-collapse").sideNav();
       var socket = this.state.socket;
 
       socket.on('login', function (user) {
@@ -15010,49 +15011,99 @@ var Chat = function (_React$Component) {
           'nav',
           null,
           _react2.default.createElement(
-            'div',
-            { className: 'nav-wrapper' },
+            'a',
+            { href: '/', className: 'brand-logo' },
             _react2.default.createElement(
-              'a',
-              { href: '/', className: 'brand-logo' },
+              _reactMaterialize.Icon,
+              null,
+              'question_answer'
+            ),
+            'Blackstorm ',
+            _react2.default.createElement(
+              'span',
+              { className: 'no-mobile' },
+              'Chat'
+            )
+          ),
+          _react2.default.createElement(
+            'ul',
+            { id: 'nav-mobile', className: 'right hide-on-med-and-down' },
+            this.state.room ? _react2.default.createElement(
+              'li',
+              null,
               _react2.default.createElement(
-                _reactMaterialize.Icon,
-                null,
-                'question_answer'
-              ),
-              'Blackstorm Chat'
+                'a',
+                { className: 'waves-effect waves-light', onClick: leave, title: 'Back to list' },
+                _react2.default.createElement(
+                  'i',
+                  { className: 'material-icons left' },
+                  'list'
+                ),
+                'Back to list'
+              )
+            ) : '',
+            this.state.user ? _react2.default.createElement(
+              'li',
+              null,
+              _react2.default.createElement(
+                'a',
+                { className: 'waves-effect waves-light', onClick: logout, title: 'Log out' },
+                _react2.default.createElement(
+                  'i',
+                  { className: 'material-icons left' },
+                  'power_settings_new'
+                ),
+                'Logout'
+              )
+            ) : ''
+          ),
+          _react2.default.createElement(
+            'a',
+            { href: '#', 'data-activates': 'mobile-demo', className: 'button-collapse' },
+            _react2.default.createElement(
+              _reactMaterialize.Icon,
+              null,
+              'menu'
+            )
+          ),
+          _react2.default.createElement(
+            'ul',
+            { className: 'side-nav', id: 'mobile-demo' },
+            _react2.default.createElement(
+              'li',
+              null,
+              _react2.default.createElement(
+                'a',
+                { href: 'sass.html' },
+                'Sass'
+              )
             ),
             _react2.default.createElement(
-              'ul',
-              { id: 'nav-mobile', className: 'right hide-on-med-and-down' },
-              this.state.room ? _react2.default.createElement(
-                'li',
-                null,
-                _react2.default.createElement(
-                  'a',
-                  { className: 'waves-effect waves-light', onClick: leave, title: 'Back to list' },
-                  _react2.default.createElement(
-                    'i',
-                    { className: 'material-icons left' },
-                    'list'
-                  ),
-                  'Back to list'
-                )
-              ) : '',
-              this.state.user ? _react2.default.createElement(
-                'li',
-                null,
-                _react2.default.createElement(
-                  'a',
-                  { className: 'waves-effect waves-light', onClick: logout, title: 'Log out' },
-                  _react2.default.createElement(
-                    'i',
-                    { className: 'material-icons left' },
-                    'power_settings_new'
-                  ),
-                  'Logout'
-                )
-              ) : ''
+              'li',
+              null,
+              _react2.default.createElement(
+                'a',
+                { href: 'badges.html' },
+                'Components'
+              )
+            ),
+            _react2.default.createElement(
+              'li',
+              null,
+              _react2.default.createElement(
+                'a',
+                { href: 'collapsible.html' },
+                'Javascript'
+              )
+            ),
+            _react2.default.createElement(
+              'li',
+              null,
+              _react2.default.createElement(
+                'a',
+                { href: 'mobile.html' },
+                'Mobile'
+              )
             )
           )
         ),

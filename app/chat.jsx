@@ -24,6 +24,7 @@ export default class Chat extends React.Component {
   }
 
   componentDidMount() {
+    $(".button-collapse").sideNav();
     const { socket } = this.state;
     socket.on('login', user => {
       cookies({ user });
@@ -64,30 +65,37 @@ export default class Chat extends React.Component {
     return (
       <div>
         <nav>
-          <div className="nav-wrapper">
-            <a href="/" className="brand-logo">
-              <Icon>question_answer</Icon>
-              Blackstorm Chat
-            </a>
-            <ul id="nav-mobile" className="right hide-on-med-and-down">
-              {this.state.room ? (
-                <li>
-                  <a className="waves-effect waves-light" onClick={leave} title='Back to list'>
-                    <i className="material-icons left">list</i>
-                    Back to list
-                  </a>
-                </li>
-              ) : ''}
-              {this.state.user ? (
-                <li>
-                  <a className="waves-effect waves-light" onClick={logout} title='Log out'>
-                    <i className="material-icons left">power_settings_new</i>
-                    Logout
-                  </a>
-                </li>
-              ) : ''}
-            </ul>
-          </div>
+          <a href="/" className="brand-logo">
+            <Icon>question_answer</Icon>
+            Blackstorm <span className="no-mobile">Chat</span>
+          </a>
+          <ul id="nav-mobile" className="right hide-on-med-and-down">
+            {this.state.room ? (
+              <li>
+                <a className="waves-effect waves-light" onClick={leave} title='Back to list'>
+                  <i className="material-icons left">list</i>
+                  Back to list
+                </a>
+              </li>
+            ) : ''}
+            {this.state.user ? (
+              <li>
+                <a className="waves-effect waves-light" onClick={logout} title='Log out'>
+                  <i className="material-icons left">power_settings_new</i>
+                  Logout
+                </a>
+              </li>
+            ) : ''}
+          </ul>
+          <a href="#" data-activates="mobile-demo" className="button-collapse">
+            <Icon>menu</Icon>
+          </a>
+          <ul className="side-nav" id="mobile-demo">
+            <li><a href="sass.html">Sass</a></li>
+            <li><a href="badges.html">Components</a></li>
+            <li><a href="collapsible.html">Javascript</a></li>
+            <li><a href="mobile.html">Mobile</a></li>
+          </ul>
         </nav>
         <main>
           {this.getScreen({ user: this.state.user, room: this.state.room })}

@@ -16,8 +16,38 @@ main {
   }
 }
 
-nav {
+nav .brand-logo,
+nav .hide-on-med-and-down {
   padding: 0 20px;
+}
+
+nav i.material-icons {
+  line-height: 64px;
+}
+
+@media all and (max-width: 992px) {
+  nav .brand-logo {
+    left: auto;
+    -webkit-transform: none;
+    transform: none;
+  }
+  nav .button-collapse {
+    float: right;
+    margin: 0;
+    padding: 0 20px;
+  }
+}
+
+@media all and (max-width: 600px) {
+  nav i.material-icons {
+    line-height: 56px;
+  }
+}
+
+@media all and (max-width: 700px) {
+  .no-mobile {
+    display: none;
+  }
 }
 
 
