@@ -17,9 +17,10 @@
   "license": "MIT",
   "dependencies": {
     "mz": "^2.6.0",
-    "server": "^1.0.0-alpha.37"
+    "server": "^1.0.0-alpha.38"
   },
   "devDependencies": {
+    "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
@@ -29,6 +30,7 @@
     "react-chatview": "^0.1.1",
     "react-dom": "^15.5.4",
     "react-materialize": "^0.18.1",
-    "socket.io-client": "^1.7.3"
+    "socket.io-client": "^1.7.3",
+    "webpack": "^2.4.1"
   }
 }

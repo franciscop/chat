@@ -9,22 +9,22 @@ import rooms from './rooms.js';
 
 
 export default class Chat extends React.Component {
-  constructor(...props){
-    super(...props);
+  constructor(props){
+    super(props);
     const user = cookies('user');
-    if (user) {
-      this.props.socket.emit('login', cookies('user'));
-    }
     this.state = {
       user: user,
       socket: io(),
       room: false,
       messages: []
     };
+    if (user) {
+      this.state.socket.emit('login', user);
+    }
   }
 
   componentDidMount() {
-    const { socket } = this.props;
+    const { socket } = this.state;
     socket.on('login', user => {
       cookies({ user });
       this.setState({ user });
@@ -45,12 +45,12 @@ export default class Chat extends React.Component {
     //   return <ErrorScreen />;
     // }
     if (room) {
-      return <RoomScreen room={room} socket={this.props.socket} messages={this.state.messages} />;
+      return <RoomScreen room={room} socket={this.state.socket} messages={this.state.messages} />;
     }
     if (user) {
-      return <JoinScreen join={room => this.props.socket.emit('join', room)} rooms={rooms} />;
+      return <JoinScreen join={room => this.state.socket.emit('join', room)} rooms={rooms} />;
     }
-    return <LoginScreen login={user => this.props.socket.emit('login', user)} />;
+    return <LoginScreen login={user => this.state.socket.emit('login', user)} />;
   }
 
   render() {
