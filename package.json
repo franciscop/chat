@@ -17,11 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "mz": "^2.6.0",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
-    "react-materialize": "^0.18.1",
-    "server": "^1.0.0-alpha.36",
-    "socket.io-client": "^1.7.3"
+    "server": "^1.0.0-alpha.37"
   },
   "devDependencies": {
     "babel-loader": "^7.0.0",
@@ -29,6 +25,10 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "cookiesjs": "^1.4.2",
-    "react-chatview": "^0.1.1"
+    "react": "^15.5.4",
+    "react-chatview": "^0.1.1",
+    "react-dom": "^15.5.4",
+    "react-materialize": "^0.18.1",
+    "socket.io-client": "^1.7.3"
   }
 }
