@@ -1,21 +1,47 @@
 body {
-  margin: 30px auto;
-  width: 100%;
-  max-width: 800px;
-  padding: 20px;
   font-size: 1.4em;
   overflow-y: scroll;
 }
 
+main {
+  margin: 30px auto;
+  padding: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
 @media all and (max-width: 800px) {
-  body {
+  main {
     margin: 0 auto;
   }
 }
 
+nav {
+  padding: 0 20px;
+}
+
+
+.login {
+  text-align: center;
+  margin-top: 30px;
+}
+
 .login .input-field {
+  margin-top: 50px;
+}
+
+.join a {
+  color: #009688;
+}
+
+/* Fixing some bugs: https://github.com/react-materialize/react-materialize/issues/80 */
+.join .collapsible-body {
+  display: none!important;
+}
+
+.input-field {
   display: inline-block;
-  width: calc(100% - 100px);
+  width: calc(100% - 80px);
   max-width: 400px;
   margin-right: 20px;
 }
@@ -28,10 +54,52 @@ input[type] {
   font-size: 1rem;
 }
 
-.actions {
-  float: right;
+
+
+
+
+.room {
+  position: fixed;
+  z-index: 1;
+  bottom: 100px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),
+    0 1px 5px 0 rgba(0,0,0,0.12),
+    0 3px 1px -2px rgba(0,0,0,0.2);
+  border: 1px solid #ddd;
+  height: calc(100% - 200px);
+  padding: 20px;
 }
 
-.actions button {
-  margin-left: 10px;
+.room form {
+  position: fixed;
+  bottom: 0;
+  width: calc(100% - 40px);
+  max-width: 570px;
+}
+
+.room .input-field {
+  max-width: 100%;
+}
+
+
+@media all and (max-width: 700px) {
+  .room {
+    top: 56px;
+    left: 0;
+    max-width: 100%;
+    border: 0;
+    box-shadow: none;
+    height: calc(100% - 100px);
+    width: 100%;
+  }
+  .room form {
+    left: 20px;
+    right: 20px;
+  }
+}
+
+.msg.meta {
+  color: #aaa;
 }

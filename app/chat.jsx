@@ -7,21 +7,16 @@ import io from 'socket.io-client';
 import cookies from 'cookiesjs';
 import rooms from './rooms.js';
 
-const LogoutButton = props => (
-  <Button
-    onClick={props.action}
-    floating
-    className="red"
-    icon='power_settings_new'
-    title='Logout'
-  />
-);
 
 export default class Chat extends React.Component {
   constructor(...props){
     super(...props);
+    const user = cookies('user');
+    if (user) {
+      this.props.socket.emit('login', cookies('user'));
+    }
     this.state = {
-      user: cookies('user'),
+      user: user,
       socket: io(),
       room: false,
       messages: []
@@ -38,7 +33,6 @@ export default class Chat extends React.Component {
       this.setState({ rooms });
     });
     socket.on('join', data => {
-      console.log('JOINED!', data);
       this.setState({
         room: data.room,
         messages: this.state.messages.concat({ type: 'join', user: data.user })
@@ -51,7 +45,7 @@ export default class Chat extends React.Component {
     //   return <ErrorScreen />;
     // }
     if (room) {
-      return <RoomScreen messages={[]} />;
+      return <RoomScreen room={room} socket={this.props.socket} messages={this.state.messages} />;
     }
     if (user) {
       return <JoinScreen join={room => this.props.socket.emit('join', room)} rooms={rooms} />;
@@ -61,26 +55,40 @@ export default class Chat extends React.Component {
 
   render() {
     const leave = () => {
-      this.setState({ room: false });
+      this.setState({ room: false, messages: [] });
     };
     const logout = () => {
       cookies({ user: undefined });
-      this.setState({ user: false, room: false });
+      this.setState({ user: false, room: false, messages: [] });
     };
     return (
       <div>
-        <h1>
-          Blackstorm Chat
-          <span className="actions">
-            {this.state.room ? (
-              <Button floating onClick={leave} icon='view_list' title='Back to list'></Button>
-            ) : ''}
-            {this.state.user ? (
-              <LogoutButton action={logout} />
-            ) : ''}
-          </span>
-        </h1>
-        {this.getScreen({ user: this.state.user, room: this.state.room })}
+        <nav>
+          <div className="nav-wrapper">
+            <a href="/" className="brand-logo">Blackstorm Chat</a>
+            <ul id="nav-mobile" className="right hide-on-med-and-down">
+              {this.state.room ? (
+                <li>
+                  <a className="waves-effect waves-light" onClick={leave} title='Back to list'>
+                    <i className="material-icons left">list</i>
+                    Back to list
+                  </a>
+                </li>
+              ) : ''}
+              {this.state.user ? (
+                <li>
+                  <a className="waves-effect waves-light" onClick={logout} title='Log out'>
+                    <i className="material-icons left">power_settings_new</i>
+                    Logout
+                  </a>
+                </li>
+              ) : ''}
+            </ul>
+          </div>
+        </nav>
+        <main>
+          {this.getScreen({ user: this.state.user, room: this.state.room })}
+        </main>
       </div>
     );
   }

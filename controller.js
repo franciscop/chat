@@ -5,13 +5,13 @@
 // - user: the user performing the action
 // - total: the total number of users
 const broadcast = (type, extra = {}) => ctx => {
-  console.log(ctx.data);
   // Using native namespaces as they are roughly equivalent to rooms
-  ctx.io.to(ctx.socket.room).emit(type, Object.assign({}, {
+  const data = Object.assign({}, {
     user: ctx.socket.username,
     room: ctx.socket.room,
     total: ctx.io.sockets.clients(ctx.data.room).length
-  }, extra));
+  }, extra);
+  ctx.io.to(ctx.socket.room).emit(type, data);
 };
 
 // Create username
@@ -29,9 +29,7 @@ exports.join = ctx => {
 
 // Send a specific message to all users in the user's room
 exports.message = ctx => {
-  return broadcast('message', {
-    message: ctx.data.message
-  });
+  return broadcast('message', { message: ctx.data });
 };
 
 // Tell everyone in the room that the current user is leaving

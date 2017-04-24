@@ -6,6 +6,9 @@ const ctrl = require('./controller');
 const fs = require('mz/fs');
 
 server([
+  ctx => {
+    console.log('AAA');
+  },
   get('*', async ctx => {
     ctx.res.send(await fs.readFile(__dirname + '/index.html', 'utf-8'));
   }),

@@ -11,4 +11,4 @@ render((
     setUser={user => cookies({ user: user })}
     socket={io()}
   />
-), document.querySelector('main'));
+), document.querySelector('#react-root'));
