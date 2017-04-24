@@ -11,7 +11,7 @@
     "build": "webpack -p",
     "watch": "webpack -p && webpack -p --watch",
     "start": "node index.js",
-    "postinstall": "./node_modules/.bin/webpack -p"
+    "deploy": "./node_modules/.bin/webpack -p && git push heroku master"
   },
   "author": "",
   "license": "MIT",
