@@ -5,21 +5,19 @@ export default class InputForm extends React.Component {
 
   constructor (props) {
     super(props);
-    this.state = {
-      message: ''
-    };
+    this.state = { message: '' };
   }
 
   render () {
 
-    // Set the username upstream in the main chat component
+    // Send the input value upstream and reset the input field
     const onSubmit = e => {
       e.preventDefault();
       this.props.send(this.state.message);
       this.setState({ message: '' });
     }
 
-    // Set the editing username
+    // Edit-as-you-go for the input field
     const onChange = e => {
       this.setState({ message: e.target.value });
     }

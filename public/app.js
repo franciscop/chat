@@ -15177,9 +15177,7 @@ var InputForm = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (InputForm.__proto__ || Object.getPrototypeOf(InputForm)).call(this, props));
 
-    _this.state = {
-      message: ''
-    };
+    _this.state = { message: '' };
     return _this;
   }
 
@@ -15188,14 +15186,14 @@ var InputForm = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      // Set the username upstream in the main chat component
+      // Send the input value upstream and reset the input field
       var onSubmit = function onSubmit(e) {
         e.preventDefault();
         _this2.props.send(_this2.state.message);
         _this2.setState({ message: '' });
       };
 
-      // Set the editing username
+      // Edit-as-you-go for the input field
       var onChange = function onChange(e) {
         _this2.setState({ message: e.target.value });
       };
@@ -15491,6 +15489,7 @@ var LoginScreen = function (_React$Component) {
       var _this2 = this;
 
       this.props.socket.on('message', function (data) {
+        console.log('Data:', data);
         _this2.setState({
           messages: [].concat(_toConsumableArray(_this2.state.messages), [{
             user: data.user,

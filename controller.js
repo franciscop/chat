@@ -5,11 +5,13 @@
 // - user: the user performing the action
 // - total: the total number of users
 const broadcast = (type, extra = {}) => ctx => {
+
   // Using native namespaces as they are roughly equivalent to rooms
+  // Room people: http://stackoverflow.com/a/24425207/938236
   const data = Object.assign({}, {
     user: ctx.socket.username,
     room: ctx.socket.room,
-    total: ctx.io.sockets.clients(ctx.data.room).length
+    total: ctx.io.sockets.adapter.rooms[ctx.socket.room].length
   }, extra);
   ctx.io.to(ctx.socket.room).emit(type, data);
 };

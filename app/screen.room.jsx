@@ -14,6 +14,7 @@ export default class LoginScreen extends React.Component {
 
   componentDidMount () {
     this.props.socket.on('message', data => {
+      console.log('Data:', data);
       this.setState({
         messages: [...this.state.messages, {
           user: data.user,
@@ -36,7 +37,6 @@ export default class LoginScreen extends React.Component {
     const onSubmit = message => {
       this.props.socket.emit('message', message);
     }
-
 
     const writeMessage = (msg, i) => {
 
