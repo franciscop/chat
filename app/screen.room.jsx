@@ -14,12 +14,12 @@ export default class LoginScreen extends React.Component {
 
   componentDidMount () {
     this.props.socket.on('message', data => {
-      console.log('Data:', data);
       this.setState({
         messages: [...this.state.messages, {
           user: data.user,
           type: 'message',
-          message: data.message
+          message: data.message,
+          total: data.total
         }]
       });
     });
@@ -27,7 +27,17 @@ export default class LoginScreen extends React.Component {
       this.setState({
         messages: [...this.state.messages, {
           user: data.user,
-          type: 'join'
+          type: 'join',
+          total: data.total
+        }]
+      });
+    });
+    this.props.socket.on('leave', data => {
+      this.setState({
+        messages: [...this.state.messages, {
+          user: data.user,
+          type: 'leave',
+          total: data.total
         }]
       });
     });
@@ -43,9 +53,9 @@ export default class LoginScreen extends React.Component {
       // If it's a grayed-out message or not
       const meta = ['join', 'leave'].includes(msg.type);
       const types = {
-        join: msg => `${msg.user} joined the room #${this.props.room}`,
+        join: msg => `${msg.user} joined #${this.props.room} - ${msg.total} users`,
         message: msg => `${msg.user}: ${msg.message}`,
-        leave: msg => `${msg.user} left the room #${this.props.room}`,
+        leave: msg => `${msg.user} left #${this.props.room} - ${msg.total} users`,
       };
 
       return (

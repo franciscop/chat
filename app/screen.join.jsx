@@ -11,23 +11,26 @@ export default class JoinScreen extends React.Component {
   }
   render () {
     const onClick = (id, e) => {
-      e.preventDefault();
+      window.location.hash = id;
 
       // Show an error if the join screen is still active after 2000ms
-      errorStill('.join', 'Error loading the room, please try again later');
+      errorStill('.join.screen', 'Error loading the room, please try again later');
       this.props.join(id);
     };
     return (
-      <div className="join">
+      <div className="join screen">
         <p>Pick a chat room:</p>
         <Collapsible accordion={true} defaultActiveKey={false}>
-          {this.props.rooms.map((room, i) => (
+          {this.props.rooms.map(room => (
             <CollapsibleItem
-              key={'room-' + room.id}
-              onClick={onClick.bind(this, room.id)}
-              header={room.name}
+              key={'room-' + room.name.toLowerCase()}
+              href={'#' + room.name.toLowerCase()}
+              onClick={onClick.bind(this, room.name.toLowerCase())}
+              header={room.name + ' - ' + room.users}
               icon={room.icon}
-            />
+            >
+              <a href="#!" class="secondary-content"><i class="material-icons">send</i></a>
+            </CollapsibleItem>
           ))}
         </Collapsible>
       </div>

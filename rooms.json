@@ -1,0 +1,8 @@
+[
+  { "name": "Announcements", "icon": "announcement" },
+  { "name": "General", "icon": "question_answer" },
+  { "name": "Games", "icon": "games" },
+  { "name": "Engine", "icon": "settings" },
+  { "name": "Players", "icon": "perm_identity" },
+  { "name": "Help", "icon": "live_help" }
+]
