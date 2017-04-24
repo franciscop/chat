@@ -11,7 +11,7 @@
     "build": "webpack -p",
     "watch": "webpack -p && webpack -p --watch",
     "start": "node index.js",
-    "postinstall": "webpack -p"
+    "postinstall": "./node_modules/.bin/webpack -p"
   },
   "author": "",
   "license": "MIT",
