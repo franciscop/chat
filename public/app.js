@@ -15319,7 +15319,7 @@ var RoomList = function RoomList(props) {
           {
             onClick: join.bind(null, props.join, room.name.toLowerCase()),
             href: '#' + room.name.toLowerCase(),
-            className: 'collapsible-header' },
+            className: 'collapsible-header waves-effect waves-brand' },
           _react2.default.createElement(
             _reactMaterialize.Icon,
             null,

@@ -18,7 +18,7 @@ const RoomList = props => (
         <a
           onClick={join.bind(null, props.join, room.name.toLowerCase())}
           href={'#' + room.name.toLowerCase()}
-          className="collapsible-header">
+          className="collapsible-header waves-effect waves-brand">
           <Icon>{room.icon}</Icon>
           {room.name}
           <span className="secondary-content">

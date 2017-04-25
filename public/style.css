@@ -142,6 +142,7 @@ input[type] {
 .loader {
   margin: 85px auto;
   text-align: center;
+  animation: 2s ease-out 1 fadeIn forwards;
 }
 
 .loader > * {
@@ -151,7 +152,7 @@ input[type] {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: #515EB4;
+  animation: 1s infinite zoom alternate, 10s 1 turnRed forwards;
 }
 
 @keyframes zoom {
@@ -164,16 +165,25 @@ input[type] {
   text-align: center;
 }
 
+@keyframes turnRed {
+  0% { background: #515EB4; }
+  100% { background: red; }
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 .loader > *:nth-child(1) {
-  animation: zoom 1s infinite -.666s;
+  animation-delay: -.5s;
 }
 
 .loader > *:nth-child(2) {
-  animation: zoom 1s infinite -.333s;
+  animation-delay: -.25s;
 }
 
 .loader > *:nth-child(3) {
-  animation: zoom 1s infinite 0s;
+  animation-delay: 0s;
 }
 
 
@@ -202,4 +212,8 @@ input[type]:focus:not([readonly]) {
 
 input[type]:focus:not([readonly]) + label {
   color: #515EB4;
+}
+
+.waves-effect.waves-brand .waves-ripple {
+  background-color: rgba(81, 94, 180, 0.5);
 }

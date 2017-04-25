@@ -11,7 +11,7 @@
     "build": "webpack -p",
     "watch": "webpack -p && webpack -p --watch",
     "start": "node index.js",
-    "deploy": "./node_modules/.bin/webpack -p && git push heroku master"
+    "deploy": "nmp run build && git add public/app.js && git commit -m 'Built' && git push heroku master"
   },
   "author": "",
   "license": "MIT",
