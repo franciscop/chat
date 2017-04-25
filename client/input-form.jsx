@@ -13,6 +13,7 @@ export default class InputForm extends React.Component {
     // Send the input value upstream and reset the input field
     const onSubmit = e => {
       e.preventDefault();
+      if (!this.state.message) return;
       this.props.send(this.state.message);
       this.setState({ message: '' });
     }
