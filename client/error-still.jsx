@@ -8,7 +8,6 @@ export default (selector, message) => {
         error = false;
       }
       if (i === 2000 && error) {
-        alert(error);
         Materialize.toast(message || 'Error! Please try again later', 3000);
       }
     }, i);

@@ -61,7 +61,7 @@ nav i.material-icons {
 }
 
 .join a {
-  color: #009688;
+  color: #333;
 }
 
 /* Fixing some bugs: https://github.com/react-materialize/react-materialize/issues/80 */
@@ -132,4 +132,73 @@ input[type] {
 
 .msg.meta {
   color: #aaa;
+}
+
+
+
+
+/* From another site */
+.loader {
+  margin: 85px auto;
+  text-align: center;
+}
+
+.loader > * {
+  margin: 0 5px;
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #515EB4;
+}
+
+@keyframes zoom {
+  0% { transform: scale(.3); }
+  50% { transform: scale(1); }
+  100% { transform: scale(.3); }
+}
+
+.loading {
+  text-align: center;
+}
+
+.loader > *:nth-child(1) {
+  animation: zoom 1s infinite -.666s;
+}
+
+.loader > *:nth-child(2) {
+  animation: zoom 1s infinite -.333s;
+}
+
+.loader > *:nth-child(3) {
+  animation: zoom 1s infinite 0s;
+}
+
+
+
+
+/* BRAND */
+/* color: #515EB4 */
+
+nav,
+.btn-floating {
+  background: #515EB4;
+}
+
+.btn-floating:hover {
+  background: #6d78c0;
+}
+
+.input-field .prefix.active {
+  color: #515EB4;
+}
+
+input[type]:focus:not([readonly]) {
+  border-bottom: 1px solid #515EB4;
+  box-shadow: 0 1px 0 0 #515EB4;
+}
+
+input[type]:focus:not([readonly]) + label {
+  color: #515EB4;
 }

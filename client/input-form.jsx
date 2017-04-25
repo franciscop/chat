@@ -18,18 +18,23 @@ export default class InputForm extends React.Component {
     }
 
     // Edit-as-you-go for the input field
-    const onChange = e => {
-      this.setState({ message: e.target.value });
-    }
+    const onChange = e => this.setState({ message: e.target.value });
+
+    // Make sure that clicking around the input focuses it
+    // It will submit if click on the button, then re-focus it
+    const onClick = e => e.currentTarget.querySelector('input').focus();
+
+    // For this context this randomized is totally okay
+    const field = 'field-' + parseInt(Math.random() * 100000);
 
     return (
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} onClick={onClick}>
         <div className="input-field">
           {this.props.icon ? (
             <Icon className="prefix">{this.props.icon}</Icon>
           ) : ''}
           <input
-            id="username"
+            id={field}
             onChange={onChange}
             value={this.state.message}
             placeholder={this.props.placeholder}
@@ -37,7 +42,7 @@ export default class InputForm extends React.Component {
             autoComplete="off"
             type="text"
             autoFocus />
-          <label htmlFor="username">{this.props.children}</label>
+          <label htmlFor={field}>{this.props.children}</label>
         </div>
         <button
           className="btn btn-large btn-floating waves-effect waves-light"

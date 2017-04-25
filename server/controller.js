@@ -1,4 +1,4 @@
-const roomList = require('./rooms');
+const roomList = require('../rooms');
 
 // Gete a list of the rooms and how many users are in each
 const rooms = io => {
@@ -25,7 +25,6 @@ const broadcast = (type, extra = {}) => ctx => {
     total: (ctx.io.sockets.adapter.rooms[ctx.socket.room] || []).length
   }, extra);
   ctx.io.to(ctx.socket.room).emit(type, data);
-
   ctx.io.emit('rooms', { rooms: rooms(ctx.io) });
 };
 
@@ -49,5 +48,6 @@ exports.message = ctx => {
 
 // Tell everyone in the room that the current user is leaving
 exports.leave = ctx => {
+  ctx.socket.leave(ctx.socket.room);
   return broadcast('leave');
 };

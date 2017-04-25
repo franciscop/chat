@@ -3,12 +3,12 @@ import { Icon, Collection, CollectionItem } from 'react-materialize';
 import ReactChatView from 'react-chatview';
 import InputForm from './input-form.jsx';
 
-export default class LoginScreen extends React.Component {
+export default class Room extends React.Component {
   constructor(...props){
     super(...props);
     this.state = {
       message: '',
-      messages: props[0].messages
+      messages: []
     };
   }
 
@@ -33,6 +33,10 @@ export default class LoginScreen extends React.Component {
       });
     });
     this.props.socket.on('leave', data => {
+      console.log(data);
+      if (data.user === this.props.user) {
+        return;
+      }
       this.setState({
         messages: [...this.state.messages, {
           user: data.user,
@@ -41,6 +45,11 @@ export default class LoginScreen extends React.Component {
         }]
       });
     });
+  }
+  componentWillUnmount () {
+    this.props.socket.removeAllListeners('join');
+    this.props.socket.removeAllListeners('message');
+    this.props.socket.removeAllListeners('leave');
   }
   render () {
     // Set the username upstream in the main chat component

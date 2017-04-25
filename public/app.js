@@ -9333,7 +9333,6 @@ exports.default = function (selector, message) {
         error = false;
       }
       if (i === 2000 && error) {
-        alert(error);
         Materialize.toast(message || 'Error! Please try again later', 3000);
       }
     }, i);
@@ -9397,12 +9396,21 @@ var InputForm = function (_React$Component) {
 
       // Edit-as-you-go for the input field
       var onChange = function onChange(e) {
-        _this2.setState({ message: e.target.value });
+        return _this2.setState({ message: e.target.value });
       };
+
+      // Make sure that clicking around the input focuses it
+      // It will submit if click on the button, then re-focus it
+      var onClick = function onClick(e) {
+        return e.currentTarget.querySelector('input').focus();
+      };
+
+      // For this context this randomized is totally okay
+      var field = 'field-' + parseInt(Math.random() * 100000);
 
       return _react2.default.createElement(
         'form',
-        { onSubmit: onSubmit },
+        { onSubmit: onSubmit, onClick: onClick },
         _react2.default.createElement(
           'div',
           { className: 'input-field' },
@@ -9412,7 +9420,7 @@ var InputForm = function (_React$Component) {
             this.props.icon
           ) : '',
           _react2.default.createElement('input', {
-            id: 'username',
+            id: field,
             onChange: onChange,
             value: this.state.message,
             placeholder: this.props.placeholder,
@@ -9422,7 +9430,7 @@ var InputForm = function (_React$Component) {
             autoFocus: true }),
           _react2.default.createElement(
             'label',
-            { htmlFor: 'username' },
+            { htmlFor: field },
             this.props.children
           )
         ),
@@ -15002,9 +15010,9 @@ var _screenJoin = __webpack_require__(126);
 
 var _screenJoin2 = _interopRequireDefault(_screenJoin);
 
-var _screenRoom = __webpack_require__(128);
+var _room = __webpack_require__(301);
 
-var _screenRoom2 = _interopRequireDefault(_screenRoom);
+var _room2 = _interopRequireDefault(_room);
 
 var _reactMaterialize = __webpack_require__(43);
 
@@ -15034,19 +15042,15 @@ var Chat = function (_React$Component) {
 
     var user = (0, _cookiesjs2.default)('user');
     var room = window.location.hash.replace(/^#/, '') || false;
-    _this.state = {
-      user: user,
-      socket: (0, _socket2.default)(),
-      room: room,
-      messages: [],
-      rooms: []
-    };
+    _this.state = { user: user, socket: (0, _socket2.default)(), room: room, rooms: [] };
     if (user) {
       _this.state.socket.emit('login', user);
     }
     if (room) {
       _this.state.socket.emit('join', room);
     }
+    _this.leave = _this.leave.bind(_this);
+    _this.logout = _this.logout.bind(_this);
     return _this;
   }
 
@@ -15056,10 +15060,7 @@ var Chat = function (_React$Component) {
       var _this2 = this;
 
       window.addEventListener('popstate', function (e) {
-        _this2.setState({
-          room: window.location.hash.replace(/^#/, ''),
-          messages: []
-        });
+        _this2.setState({ room: window.location.hash.replace(/^#/, '') });
       });
       $(".button-collapse").sideNav();
       var socket = this.state.socket;
@@ -15072,14 +15073,10 @@ var Chat = function (_React$Component) {
         _this2.setState({ user: user, rooms: rooms });
       });
       socket.on('rooms', function (data) {
-        console.log(data.rooms);
         _this2.setState({ rooms: data.rooms });
       });
       socket.on('join', function (data) {
-        _this2.setState({
-          room: data.room,
-          messages: _this2.state.messages.concat({ type: 'join', user: data.user })
-        });
+        _this2.setState({ room: data.room });
       });
     }
   }, {
@@ -15092,37 +15089,54 @@ var Chat = function (_React$Component) {
           _ref2$room = _ref2.room,
           room = _ref2$room === undefined ? false : _ref2$room;
 
-      // if (room && !user) {
-      //   return <ErrorScreen />;
-      // }
+      if (room && !user) {
+        Materialize.toast('Error detected, please log in again', 3000);
+        this.setState({});
+        return _react2.default.createElement(
+          'p',
+          null,
+          'Error detected, please log in again'
+        );
+      }
       if (room) {
-        return _react2.default.createElement(_screenRoom2.default, { room: room, socket: this.state.socket, messages: this.state.messages });
+        return _react2.default.createElement(_room2.default, {
+          user: user,
+          room: room,
+          socket: this.state.socket
+        });
       }
       if (user) {
-        return _react2.default.createElement(_screenJoin2.default, { join: function join(room) {
+        return _react2.default.createElement(_screenJoin2.default, {
+          join: function join(room) {
             return _this3.state.socket.emit('join', room);
-          }, rooms: this.state.rooms || [] });
+          },
+          rooms: this.state.rooms || []
+        });
       }
-      return _react2.default.createElement(_screenLogin2.default, { login: function login(user) {
+      return _react2.default.createElement(_screenLogin2.default, {
+        login: function login(user) {
           return _this3.state.socket.emit('login', user);
-        } });
+        }
+      });
+    }
+  }, {
+    key: 'logout',
+    value: function logout() {
+      this.leave();
+      (0, _cookiesjs2.default)({ user: undefined });
+      this.setState({ user: false, room: false });
+    }
+  }, {
+    key: 'leave',
+    value: function leave() {
+      // Remove hash ( http://stackoverflow.com/a/5298684/938236 )
+      this.setState({ room: false });
+      this.state.socket.emit('leave');
+      history.pushState("", document.title, window.location.pathname + window.location.search);
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this4 = this;
-
-      var leave = function leave() {
-        // Remove hash ( http://stackoverflow.com/a/5298684/938236 )
-        _this4.setState({ room: false, messages: [] });
-        _this4.state.socket.emit('leave');
-        history.pushState("", document.title, window.location.pathname + window.location.search);
-      };
-      var logout = function logout() {
-        leave();
-        (0, _cookiesjs2.default)({ user: undefined });
-        _this4.setState({ user: false, room: false, messages: [] });
-      };
       return _react2.default.createElement(
         'div',
         null,
@@ -15152,7 +15166,7 @@ var Chat = function (_React$Component) {
               null,
               _react2.default.createElement(
                 'a',
-                { className: 'waves-effect waves-light', onClick: leave, title: 'Back to list' },
+                { className: 'waves-effect waves-light', onClick: this.leave, title: 'Back to list' },
                 _react2.default.createElement(
                   'i',
                   { className: 'material-icons left' },
@@ -15166,7 +15180,7 @@ var Chat = function (_React$Component) {
               null,
               _react2.default.createElement(
                 'a',
-                { className: 'waves-effect waves-light', onClick: logout, title: 'Log out' },
+                { className: 'waves-effect waves-light', onClick: this.logout, title: 'Log out' },
                 _react2.default.createElement(
                   'i',
                   { className: 'material-icons left' },
@@ -15188,42 +15202,34 @@ var Chat = function (_React$Component) {
           _react2.default.createElement(
             'ul',
             { className: 'side-nav', id: 'mobile-demo' },
-            _react2.default.createElement(
+            this.state.room ? _react2.default.createElement(
               'li',
               null,
               _react2.default.createElement(
                 'a',
-                { href: 'sass.html' },
-                'Sass'
+                { className: 'waves-effect waves-light', onClick: this.leave, title: 'Back to list' },
+                _react2.default.createElement(
+                  'i',
+                  { className: 'material-icons left' },
+                  'list'
+                ),
+                'Back to list'
               )
-            ),
-            _react2.default.createElement(
+            ) : '',
+            this.state.user ? _react2.default.createElement(
               'li',
               null,
               _react2.default.createElement(
                 'a',
-                { href: 'badges.html' },
-                'Components'
+                { className: 'waves-effect waves-light', onClick: this.logout, title: 'Log out' },
+                _react2.default.createElement(
+                  'i',
+                  { className: 'material-icons left' },
+                  'power_settings_new'
+                ),
+                'Logout'
               )
-            ),
-            _react2.default.createElement(
-              'li',
-              null,
-              _react2.default.createElement(
-                'a',
-                { href: 'collapsible.html' },
-                'Javascript'
-              )
-            ),
-            _react2.default.createElement(
-              'li',
-              null,
-              _react2.default.createElement(
-                'a',
-                { href: 'mobile.html' },
-                'Mobile'
-              )
-            )
+            ) : ''
           )
         ),
         _react2.default.createElement(
@@ -15309,7 +15315,7 @@ var JoinScreen = function (_React$Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      $('.join a').addClass('waves-effect waves-teal');
+      $('.join a').addClass('waves-effect');
     }
   }, {
     key: 'render',
@@ -15326,35 +15332,56 @@ var JoinScreen = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'join screen' },
-        _react2.default.createElement(
-          'p',
+        this.props.rooms.length ? _react2.default.createElement(
+          'div',
           null,
-          'Pick a chat room:'
-        ),
-        _react2.default.createElement(
-          _reactMaterialize.Collapsible,
-          { accordion: true, defaultActiveKey: false },
-          this.props.rooms.map(function (room) {
-            return _react2.default.createElement(
-              _reactMaterialize.CollapsibleItem,
-              {
-                key: 'room-' + room.name.toLowerCase(),
-                href: '#' + room.name.toLowerCase(),
-                onClick: onClick.bind(_this2, room.name.toLowerCase()),
-                header: room.name + ' - ' + room.users,
-                icon: room.icon
-              },
-              _react2.default.createElement(
-                'a',
-                { href: '#!', 'class': 'secondary-content' },
+          _react2.default.createElement(
+            'p',
+            null,
+            'Pick a chat room:'
+          ),
+          _react2.default.createElement(
+            _reactMaterialize.Collapsible,
+            { accordion: true, defaultActiveKey: false },
+            this.props.rooms.map(function (room) {
+              return _react2.default.createElement(
+                _reactMaterialize.CollapsibleItem,
+                {
+                  key: 'room-' + room.name.toLowerCase(),
+                  href: '#' + room.name.toLowerCase(),
+                  onClick: onClick.bind(_this2, room.name.toLowerCase()),
+                  header: room.name + ' - ' + room.users + ' users',
+                  icon: room.icon
+                },
                 _react2.default.createElement(
-                  'i',
-                  { 'class': 'material-icons' },
-                  'send'
+                  'a',
+                  { href: '#!', 'class': 'secondary-content' },
+                  _react2.default.createElement(
+                    'i',
+                    { 'class': 'material-icons' },
+                    'send'
+                  )
                 )
-              )
-            );
-          })
+              );
+            })
+          )
+        ) : _react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement(
+            'p',
+            { className: 'loading' },
+            'Loading your chat rooms'
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'loader' },
+            _react2.default.createElement('div', null),
+            ' ',
+            _react2.default.createElement('div', null),
+            ' ',
+            _react2.default.createElement('div', null)
+          )
         )
       );
     }
@@ -15443,154 +15470,7 @@ exports.default = LoginScreen;
 ;
 
 /***/ }),
-/* 128 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactMaterialize = __webpack_require__(43);
-
-var _reactChatview = __webpack_require__(174);
-
-var _reactChatview2 = _interopRequireDefault(_reactChatview);
-
-var _inputForm = __webpack_require__(73);
-
-var _inputForm2 = _interopRequireDefault(_inputForm);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var LoginScreen = function (_React$Component) {
-  _inherits(LoginScreen, _React$Component);
-
-  function LoginScreen() {
-    var _ref;
-
-    _classCallCheck(this, LoginScreen);
-
-    for (var _len = arguments.length, props = Array(_len), _key = 0; _key < _len; _key++) {
-      props[_key] = arguments[_key];
-    }
-
-    var _this = _possibleConstructorReturn(this, (_ref = LoginScreen.__proto__ || Object.getPrototypeOf(LoginScreen)).call.apply(_ref, [this].concat(props)));
-
-    _this.state = {
-      message: '',
-      messages: props[0].messages
-    };
-    return _this;
-  }
-
-  _createClass(LoginScreen, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      this.props.socket.on('message', function (data) {
-        _this2.setState({
-          messages: [].concat(_toConsumableArray(_this2.state.messages), [{
-            user: data.user,
-            type: 'message',
-            message: data.message,
-            total: data.total
-          }])
-        });
-      });
-      this.props.socket.on('join', function (data) {
-        _this2.setState({
-          messages: [].concat(_toConsumableArray(_this2.state.messages), [{
-            user: data.user,
-            type: 'join',
-            total: data.total
-          }])
-        });
-      });
-      this.props.socket.on('leave', function (data) {
-        _this2.setState({
-          messages: [].concat(_toConsumableArray(_this2.state.messages), [{
-            user: data.user,
-            type: 'leave',
-            total: data.total
-          }])
-        });
-      });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this3 = this;
-
-      // Set the username upstream in the main chat component
-      var onSubmit = function onSubmit(message) {
-        _this3.props.socket.emit('message', message);
-      };
-
-      var writeMessage = function writeMessage(msg, i) {
-
-        // If it's a grayed-out message or not
-        var meta = ['join', 'leave'].includes(msg.type);
-        var types = {
-          join: function join(msg) {
-            return msg.user + ' joined #' + _this3.props.room + ' - ' + msg.total + ' users';
-          },
-          message: function message(msg) {
-            return msg.user + ': ' + msg.message;
-          },
-          leave: function leave(msg) {
-            return msg.user + ' left #' + _this3.props.room + ' - ' + msg.total + ' users';
-          }
-        };
-
-        return _react2.default.createElement(
-          'div',
-          { className: ['msg', meta ? 'meta' : ''].join(' '), key: 'msg-' + i },
-          types[msg.type](msg)
-        );
-      };
-      return _react2.default.createElement(
-        _reactChatview2.default,
-        {
-          className: 'room',
-          flipped: true,
-          scrollLoadThreshold: 50,
-          onInfiniteLoad: function onInfiniteLoad() {}
-        },
-        this.state.messages.map(writeMessage),
-        _react2.default.createElement(
-          _inputForm2.default,
-          { send: onSubmit, icon: 'edit_mode' },
-          'Write a message'
-        )
-      );
-    }
-  }]);
-
-  return LoginScreen;
-}(_react2.default.Component);
-
-exports.default = LoginScreen;
-;
-
-/***/ }),
+/* 128 */,
 /* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17615,7 +17495,7 @@ var BrowserWebSocket = global.WebSocket || global.MozWebSocket;
 var NodeWebSocket;
 if (typeof window === 'undefined') {
   try {
-    NodeWebSocket = __webpack_require__(301);
+    NodeWebSocket = __webpack_require__(300);
   } catch (e) {}
 }
 
@@ -38040,11 +37920,169 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(71)(module), __webpack_require__(9)))
 
 /***/ }),
-/* 300 */,
-/* 301 */
+/* 300 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
+
+/***/ }),
+/* 301 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactMaterialize = __webpack_require__(43);
+
+var _reactChatview = __webpack_require__(174);
+
+var _reactChatview2 = _interopRequireDefault(_reactChatview);
+
+var _inputForm = __webpack_require__(73);
+
+var _inputForm2 = _interopRequireDefault(_inputForm);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Room = function (_React$Component) {
+  _inherits(Room, _React$Component);
+
+  function Room() {
+    var _ref;
+
+    _classCallCheck(this, Room);
+
+    for (var _len = arguments.length, props = Array(_len), _key = 0; _key < _len; _key++) {
+      props[_key] = arguments[_key];
+    }
+
+    var _this = _possibleConstructorReturn(this, (_ref = Room.__proto__ || Object.getPrototypeOf(Room)).call.apply(_ref, [this].concat(props)));
+
+    _this.state = {
+      message: '',
+      messages: []
+    };
+    return _this;
+  }
+
+  _createClass(Room, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      this.props.socket.on('message', function (data) {
+        _this2.setState({
+          messages: [].concat(_toConsumableArray(_this2.state.messages), [{
+            user: data.user,
+            type: 'message',
+            message: data.message,
+            total: data.total
+          }])
+        });
+      });
+      this.props.socket.on('join', function (data) {
+        _this2.setState({
+          messages: [].concat(_toConsumableArray(_this2.state.messages), [{
+            user: data.user,
+            type: 'join',
+            total: data.total
+          }])
+        });
+      });
+      this.props.socket.on('leave', function (data) {
+        console.log(data);
+        if (data.user === _this2.props.user) {
+          return;
+        }
+        _this2.setState({
+          messages: [].concat(_toConsumableArray(_this2.state.messages), [{
+            user: data.user,
+            type: 'leave',
+            total: data.total
+          }])
+        });
+      });
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.props.socket.removeAllListeners('join');
+      this.props.socket.removeAllListeners('message');
+      this.props.socket.removeAllListeners('leave');
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this3 = this;
+
+      // Set the username upstream in the main chat component
+      var onSubmit = function onSubmit(message) {
+        _this3.props.socket.emit('message', message);
+      };
+
+      var writeMessage = function writeMessage(msg, i) {
+
+        // If it's a grayed-out message or not
+        var meta = ['join', 'leave'].includes(msg.type);
+        var types = {
+          join: function join(msg) {
+            return msg.user + ' joined #' + _this3.props.room + ' - ' + msg.total + ' users';
+          },
+          message: function message(msg) {
+            return msg.user + ': ' + msg.message;
+          },
+          leave: function leave(msg) {
+            return msg.user + ' left #' + _this3.props.room + ' - ' + msg.total + ' users';
+          }
+        };
+
+        return _react2.default.createElement(
+          'div',
+          { className: ['msg', meta ? 'meta' : ''].join(' '), key: 'msg-' + i },
+          types[msg.type](msg)
+        );
+      };
+      return _react2.default.createElement(
+        _reactChatview2.default,
+        {
+          className: 'room',
+          flipped: true,
+          scrollLoadThreshold: 50,
+          onInfiniteLoad: function onInfiniteLoad() {}
+        },
+        this.state.messages.map(writeMessage),
+        _react2.default.createElement(
+          _inputForm2.default,
+          { send: onSubmit, icon: 'edit_mode' },
+          'Write a message'
+        )
+      );
+    }
+  }]);
+
+  return Room;
+}(_react2.default.Component);
+
+exports.default = Room;
+;
 
 /***/ })
 /******/ ]);
