@@ -42,9 +42,23 @@ export default class Room extends React.Component {
       // If it's a grayed-out message or not
       const meta = ['join', 'leave'].includes(msg.type);
       const types = {
-        join: msg => `${msg.user} joined #${this.props.room} - ${msg.total} users`,
-        message: msg => `${msg.user}: ${msg.message}`,
-        leave: msg => `${msg.user} left #${this.props.room} - ${msg.total} users`,
+        join: msg => (
+          <div>
+            {msg.user} joined #{msg.room}
+            <span className="secondary-content">{msg.total}
+              <i className="material-icons right">supervisor_account</i>
+            </span>
+          </div>
+        ),
+        message: msg => <div>{msg.user}: {msg.message}</div>,
+        leave: msg => (
+          <div>
+            {msg.user} left #{msg.room}
+            <span className="secondary-content">{msg.total}
+              <i className="material-icons right">supervisor_account</i>
+            </span>
+          </div>
+        )
       };
 
       return (

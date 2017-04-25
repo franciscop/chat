@@ -6,7 +6,7 @@ const { file } = server.reply;
 const ctrl = require('./server/controller');
 const fs = require('mz/fs');
 
-server([
+server({ connect: { favicon: __dirname + '/public/favicon.png' } }, [
   get('*', file('index.html')),
   socket('login', ctrl.login),
   socket('join', ctrl.join),

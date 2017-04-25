@@ -103,6 +103,13 @@ input[type] {
   padding: 20px;
 }
 
+.room .secondary-content,
+.room .material-icons {
+  line-height: 28px;
+  margin-top: 0;
+  color: #aaa;
+}
+
 .room form {
   position: fixed;
   bottom: 0;
