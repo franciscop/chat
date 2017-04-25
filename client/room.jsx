@@ -76,7 +76,7 @@ export default class Room extends React.Component {
       >
         {this.state.messages.map(writeMessage)}
 
-        <InputForm send={onSubmit} icon="edit_mode">
+        <InputForm placeholder="message" send={onSubmit} icon="edit_mode">
           Write a message
         </InputForm>
       </ReactChatView>
