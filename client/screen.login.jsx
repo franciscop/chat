@@ -15,6 +15,7 @@ export default props => {
       <InputForm send={onSubmit} placeholder="username" icon="perm_identity">
         Choose a username
       </InputForm>
+      <p>Note: this is a demo for an interview.</p>
     </div>
   );
 };
