@@ -104,7 +104,7 @@ input[type] {
 }
 
 .room .secondary-content,
-.room .material-icons {
+.room .meta .material-icons {
   line-height: 28px;
   margin-top: 0;
   color: #aaa;
