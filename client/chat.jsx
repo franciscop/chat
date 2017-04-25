@@ -139,6 +139,7 @@ export default class Chat extends React.Component {
         <main>
           {this.getScreen({ user: this.state.user, room: this.state.room })}
         </main>
+        <p>Note: this is a demo for an interview.</p>
       </div>
     );
   }
