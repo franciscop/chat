@@ -12,7 +12,11 @@ export default props => {
   return (
     <div className="login">
       <p>Join Blackstorm Chat to talk with people around the world about your favourite games and engine:</p>
-      <InputForm send={onSubmit} placeholder="username" icon="perm_identity">
+      <InputForm
+        send={onSubmit}
+        placeholder="username"
+        icon="perm_identity"
+        autoFocus>
         Choose a username
       </InputForm>
       <p>Note: this is a demo for an interview.</p>

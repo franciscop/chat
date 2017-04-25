@@ -28,6 +28,8 @@ export default class InputForm extends React.Component {
     // For this context this randomized is totally okay
     const field = 'field-' + parseInt(Math.random() * 100000);
 
+    const { autoFocus = false } = this.props;
+
     return (
       <form onSubmit={onSubmit} onClick={onClick}>
         <div className="input-field">
@@ -42,7 +44,7 @@ export default class InputForm extends React.Component {
             className="validate"
             autoComplete="off"
             type="text"
-            autoFocus />
+            autoFocus={autoFocus} />
           <label htmlFor={field}>{this.props.children}</label>
         </div>
         <button
