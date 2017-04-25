@@ -92,7 +92,7 @@ export default class Chat extends React.Component {
     return (
       <div>
         <nav>
-          <a onClick={this.leave} className="brand-logo">
+          <a onClick={this.leave} className="brand-logo waves-effect waves-light">
             <Icon>question_answer</Icon>
             Blackstorm <span className="no-mobile">Chat</span>
           </a>
