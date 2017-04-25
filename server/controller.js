@@ -24,7 +24,7 @@ const broadcast = (type, extra = {}) => ctx => {
     room: ctx.socket.room,
     total: (ctx.io.sockets.adapter.rooms[ctx.socket.room] || []).length
   }, extra);
-  ctx.io.to(ctx.socket.room).emit(type, data);
+  ctx.io.to(data.room).emit(type, data);
   ctx.io.emit('rooms', { rooms: rooms(ctx.io) });
 };
 
@@ -48,6 +48,7 @@ exports.message = ctx => {
 
 // Tell everyone in the room that the current user is leaving
 exports.leave = ctx => {
-  ctx.socket.leave(ctx.socket.room);
-  return broadcast('leave');
+  const room = ctx.socket.room;
+  ctx.socket.leave(room);
+  return broadcast('leave', { room, type: 'leave' });
 };

@@ -3,53 +3,33 @@ import { Icon, Collection, CollectionItem } from 'react-materialize';
 import ReactChatView from 'react-chatview';
 import InputForm from './input-form.jsx';
 
+// Encapsulate the message into a single entity
+const listen = (socket, type, callback) => {
+  socket.on(type, data => callback(Object.assign({}, data, { type })));
+};
+
 export default class Room extends React.Component {
-  constructor(...props){
-    super(...props);
-    this.state = {
-      message: '',
-      messages: []
-    };
+  constructor(props){
+    super(props);
+    this.state = { messages: [] };
+
+    listen(this.props.socket, 'message', message => {
+      this.setState({ messages: [...this.state.messages, message] });
+    });
+
+    listen(this.props.socket, 'join', message => {
+      this.setState({ messages: [...this.state.messages, message] });
+    });
+
+    listen(this.props.socket, 'leave', message => {
+      this.setState({ messages: [...this.state.messages, message] });
+    });
   }
 
-  componentDidMount () {
-    this.props.socket.on('message', data => {
-      this.setState({
-        messages: [...this.state.messages, {
-          user: data.user,
-          type: 'message',
-          message: data.message,
-          total: data.total
-        }]
-      });
-    });
-    this.props.socket.on('join', data => {
-      this.setState({
-        messages: [...this.state.messages, {
-          user: data.user,
-          type: 'join',
-          total: data.total
-        }]
-      });
-    });
-    this.props.socket.on('leave', data => {
-      console.log(data);
-      if (data.user === this.props.user) {
-        return;
-      }
-      this.setState({
-        messages: [...this.state.messages, {
-          user: data.user,
-          type: 'leave',
-          total: data.total
-        }]
-      });
-    });
-  }
   componentWillUnmount () {
     this.props.socket.removeAllListeners('join');
     this.props.socket.removeAllListeners('message');
-    this.props.socket.removeAllListeners('leave');
+    // this.props.socket.removeAllListeners('leave');
   }
   render () {
     // Set the username upstream in the main chat component

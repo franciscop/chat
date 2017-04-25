@@ -6,7 +6,6 @@ import { Button, Icon } from 'react-materialize';
 import io from 'socket.io-client';
 import cookies from 'cookiesjs';
 
-
 export default class Chat extends React.Component {
   constructor(props){
     super(props);
@@ -25,7 +24,11 @@ export default class Chat extends React.Component {
 
   componentDidMount() {
     window.addEventListener('popstate', e => {
-      this.setState({ room: window.location.hash.replace(/^#/, '') });
+      const room = window.location.hash.replace(/^#/, '');
+      if (!room) {
+        this.state.socket.emit('leave');
+      }
+      this.setState({ room });
     });
     $(".button-collapse").sideNav();
     const { socket } = this.state;

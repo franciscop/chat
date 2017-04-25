@@ -1,50 +1,46 @@
 import React from 'react';
-import { Collapsible, CollapsibleItem } from 'react-materialize';
+import { Icon } from 'react-materialize';
 import errorStill from './error-still.jsx';
+import Loading from './loading.jsx';
 
-export default class JoinScreen extends React.Component {
-  onClick (e) {
-    this.props.login(e.target.getAttribute('data-room'));
-  }
-  componentDidMount () {
-    $('.join a').addClass('waves-effect');
-  }
-  render () {
-    const onClick = (id, e) => {
-      window.location.hash = id;
+const join = (join, id) => {
+  window.location.hash = id;
 
-      // Show an error if the join screen is still active after 2000ms
-      errorStill('.join.screen', 'Error loading the room, please try again later');
-      this.props.join(id);
-    };
-    return (
-      <div className="join screen">
-        {this.props.rooms.length ? (
-          <div>
-            <p>Pick a chat room:</p>
-            <Collapsible accordion={true} defaultActiveKey={false}>
-              {this.props.rooms.map(room => (
-                <CollapsibleItem
-                  key={'room-' + room.name.toLowerCase()}
-                  href={'#' + room.name.toLowerCase()}
-                  onClick={onClick.bind(this, room.name.toLowerCase())}
-                  header={room.name + ' - ' + room.users + ' users'}
-                  icon={room.icon}
-                >
-                  <a href="#!" class="secondary-content"><i class="material-icons">send</i></a>
-                </CollapsibleItem>
-              ))}
-            </Collapsible>
-          </div>
-        ) : (
-          <div>
-            <p className="loading">Loading your chat rooms</p>
-            <div className="loader">
-              <div></div> <div></div> <div></div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
+  // Show an error if the join screen is still active after 2000ms
+  errorStill('.join.screen', 'Error loading the room, please try again later');
+  join(id);
 };
+
+const RoomList = props => (
+  <ul className="collapsible" data-collapsible="accordion">
+    {props.rooms.map(room => (
+      <li key={'room-' + room.name.toLowerCase()}>
+        <a
+          onClick={join.bind(null, props.join, room.name.toLowerCase())}
+          href={'#' + room.name.toLowerCase()}
+          className="collapsible-header">
+          <Icon>{room.icon}</Icon>
+          {room.name}
+          <span className="secondary-content">
+            {room.users}
+            <Icon right>supervisor_account</Icon>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+);
+
+
+export default props => (
+  <div className="join screen">
+    {props.rooms.length ? (
+      <div>
+        <p>Pick a chat room:</p>
+        <RoomList rooms={props.rooms} join={props.join} />
+      </div>
+    ) : (
+      <Loading />
+    )}
+  </div>
+);

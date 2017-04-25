@@ -60,7 +60,8 @@ nav i.material-icons {
   margin-top: 50px;
 }
 
-.join a {
+.join a,
+.join .secondary-content {
   color: #333;
 }
 

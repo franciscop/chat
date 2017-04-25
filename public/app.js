@@ -15060,7 +15060,11 @@ var Chat = function (_React$Component) {
       var _this2 = this;
 
       window.addEventListener('popstate', function (e) {
-        _this2.setState({ room: window.location.hash.replace(/^#/, '') });
+        var room = window.location.hash.replace(/^#/, '');
+        if (!room) {
+          _this2.state.socket.emit('leave');
+        }
+        _this2.setState({ room: room });
       });
       $(".button-collapse").sideNav();
       var socket = this.state.socket;
@@ -15278,8 +15282,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
@@ -15290,108 +15292,72 @@ var _errorStill = __webpack_require__(72);
 
 var _errorStill2 = _interopRequireDefault(_errorStill);
 
+var _loading = __webpack_require__(302);
+
+var _loading2 = _interopRequireDefault(_loading);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var join = function join(_join, id) {
+  window.location.hash = id;
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  // Show an error if the join screen is still active after 2000ms
+  (0, _errorStill2.default)('.join.screen', 'Error loading the room, please try again later');
+  _join(id);
+};
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var JoinScreen = function (_React$Component) {
-  _inherits(JoinScreen, _React$Component);
-
-  function JoinScreen() {
-    _classCallCheck(this, JoinScreen);
-
-    return _possibleConstructorReturn(this, (JoinScreen.__proto__ || Object.getPrototypeOf(JoinScreen)).apply(this, arguments));
-  }
-
-  _createClass(JoinScreen, [{
-    key: 'onClick',
-    value: function onClick(e) {
-      this.props.login(e.target.getAttribute('data-room'));
-    }
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      $('.join a').addClass('waves-effect');
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      var onClick = function onClick(id, e) {
-        window.location.hash = id;
-
-        // Show an error if the join screen is still active after 2000ms
-        (0, _errorStill2.default)('.join.screen', 'Error loading the room, please try again later');
-        _this2.props.join(id);
-      };
+var RoomList = function RoomList(props) {
+  return _react2.default.createElement(
+    'ul',
+    { className: 'collapsible', 'data-collapsible': 'accordion' },
+    props.rooms.map(function (room) {
       return _react2.default.createElement(
-        'div',
-        { className: 'join screen' },
-        this.props.rooms.length ? _react2.default.createElement(
-          'div',
-          null,
+        'li',
+        { key: 'room-' + room.name.toLowerCase() },
+        _react2.default.createElement(
+          'a',
+          {
+            onClick: join.bind(null, props.join, room.name.toLowerCase()),
+            href: '#' + room.name.toLowerCase(),
+            className: 'collapsible-header' },
           _react2.default.createElement(
-            'p',
+            _reactMaterialize.Icon,
             null,
-            'Pick a chat room:'
+            room.icon
           ),
+          room.name,
           _react2.default.createElement(
-            _reactMaterialize.Collapsible,
-            { accordion: true, defaultActiveKey: false },
-            this.props.rooms.map(function (room) {
-              return _react2.default.createElement(
-                _reactMaterialize.CollapsibleItem,
-                {
-                  key: 'room-' + room.name.toLowerCase(),
-                  href: '#' + room.name.toLowerCase(),
-                  onClick: onClick.bind(_this2, room.name.toLowerCase()),
-                  header: room.name + ' - ' + room.users + ' users',
-                  icon: room.icon
-                },
-                _react2.default.createElement(
-                  'a',
-                  { href: '#!', 'class': 'secondary-content' },
-                  _react2.default.createElement(
-                    'i',
-                    { 'class': 'material-icons' },
-                    'send'
-                  )
-                )
-              );
-            })
-          )
-        ) : _react2.default.createElement(
-          'div',
-          null,
-          _react2.default.createElement(
-            'p',
-            { className: 'loading' },
-            'Loading your chat rooms'
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'loader' },
-            _react2.default.createElement('div', null),
-            ' ',
-            _react2.default.createElement('div', null),
-            ' ',
-            _react2.default.createElement('div', null)
+            'span',
+            { className: 'secondary-content' },
+            room.users,
+            _react2.default.createElement(
+              _reactMaterialize.Icon,
+              { right: true },
+              'supervisor_account'
+            )
           )
         )
       );
-    }
-  }]);
+    })
+  );
+};
 
-  return JoinScreen;
-}(_react2.default.Component);
-
-exports.default = JoinScreen;
-;
+exports.default = function (props) {
+  return _react2.default.createElement(
+    'div',
+    { className: 'join screen' },
+    props.rooms.length ? _react2.default.createElement(
+      'div',
+      null,
+      _react2.default.createElement(
+        'p',
+        null,
+        'Pick a chat room:'
+      ),
+      _react2.default.createElement(RoomList, { rooms: props.rooms, join: props.join })
+    ) : _react2.default.createElement(_loading2.default, null)
+  );
+};
 
 /***/ }),
 /* 127 */
@@ -37962,80 +37928,52 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+// Encapsulate the message into a single entity
+var listen = function listen(socket, type, callback) {
+  socket.on(type, function (data) {
+    return callback(Object.assign({}, data, { type: type }));
+  });
+};
+
 var Room = function (_React$Component) {
   _inherits(Room, _React$Component);
 
-  function Room() {
-    var _ref;
-
+  function Room(props) {
     _classCallCheck(this, Room);
 
-    for (var _len = arguments.length, props = Array(_len), _key = 0; _key < _len; _key++) {
-      props[_key] = arguments[_key];
-    }
+    var _this = _possibleConstructorReturn(this, (Room.__proto__ || Object.getPrototypeOf(Room)).call(this, props));
 
-    var _this = _possibleConstructorReturn(this, (_ref = Room.__proto__ || Object.getPrototypeOf(Room)).call.apply(_ref, [this].concat(props)));
+    _this.state = { messages: [] };
 
-    _this.state = {
-      message: '',
-      messages: []
-    };
+    listen(_this.props.socket, 'message', function (message) {
+      _this.setState({ messages: [].concat(_toConsumableArray(_this.state.messages), [message]) });
+    });
+
+    listen(_this.props.socket, 'join', function (message) {
+      _this.setState({ messages: [].concat(_toConsumableArray(_this.state.messages), [message]) });
+    });
+
+    listen(_this.props.socket, 'leave', function (message) {
+      _this.setState({ messages: [].concat(_toConsumableArray(_this.state.messages), [message]) });
+    });
     return _this;
   }
 
   _createClass(Room, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      this.props.socket.on('message', function (data) {
-        _this2.setState({
-          messages: [].concat(_toConsumableArray(_this2.state.messages), [{
-            user: data.user,
-            type: 'message',
-            message: data.message,
-            total: data.total
-          }])
-        });
-      });
-      this.props.socket.on('join', function (data) {
-        _this2.setState({
-          messages: [].concat(_toConsumableArray(_this2.state.messages), [{
-            user: data.user,
-            type: 'join',
-            total: data.total
-          }])
-        });
-      });
-      this.props.socket.on('leave', function (data) {
-        console.log(data);
-        if (data.user === _this2.props.user) {
-          return;
-        }
-        _this2.setState({
-          messages: [].concat(_toConsumableArray(_this2.state.messages), [{
-            user: data.user,
-            type: 'leave',
-            total: data.total
-          }])
-        });
-      });
-    }
-  }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       this.props.socket.removeAllListeners('join');
       this.props.socket.removeAllListeners('message');
-      this.props.socket.removeAllListeners('leave');
+      // this.props.socket.removeAllListeners('leave');
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       // Set the username upstream in the main chat component
       var onSubmit = function onSubmit(message) {
-        _this3.props.socket.emit('message', message);
+        _this2.props.socket.emit('message', message);
       };
 
       var writeMessage = function writeMessage(msg, i) {
@@ -38044,13 +37982,13 @@ var Room = function (_React$Component) {
         var meta = ['join', 'leave'].includes(msg.type);
         var types = {
           join: function join(msg) {
-            return msg.user + ' joined #' + _this3.props.room + ' - ' + msg.total + ' users';
+            return msg.user + ' joined #' + _this2.props.room + ' - ' + msg.total + ' users';
           },
           message: function message(msg) {
             return msg.user + ': ' + msg.message;
           },
           leave: function leave(msg) {
-            return msg.user + ' left #' + _this3.props.room + ' - ' + msg.total + ' users';
+            return msg.user + ' left #' + _this2.props.room + ' - ' + msg.total + ' users';
           }
         };
 
@@ -38083,6 +38021,44 @@ var Room = function (_React$Component) {
 
 exports.default = Room;
 ;
+
+/***/ }),
+/* 302 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (props) {
+  return _react2.default.createElement(
+    "div",
+    null,
+    _react2.default.createElement(
+      "p",
+      { className: "loading" },
+      "Loading your chat rooms"
+    ),
+    _react2.default.createElement(
+      "div",
+      { className: "loader" },
+      _react2.default.createElement("div", null),
+      " ",
+      _react2.default.createElement("div", null),
+      " ",
+      _react2.default.createElement("div", null)
+    )
+  );
+};
 
 /***/ })
 /******/ ]);
